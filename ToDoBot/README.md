@@ -6,7 +6,7 @@ A simple Discord bot for creating to-do items. Supports slash commands and butto
 * Gradle 7+
 * JDA 5+
 
-# Installation
+## Installation
 To use this bot, a new Discord bot has to be created via [Discord Developer Portal](https://discord.com/developers/applications). The bot has to have the scopes `bot` and `applications.commands` while creating OAuth2 link.
 
 In Bot section of the developer portal, a token has to be generated to be set as the `DISCORD_TOKEN` in the [Bot.java](https://github.com/egekaanisik/ToDoBot/blob/master/ToDoBot/src/main/java/dev/mrpanda/ToDoBot/Bot.java).
@@ -15,18 +15,18 @@ Another field that needs to be set is `OWNER_ID`. Enter the bot owner ID to this
 
 > Note: The user ID can be obtained by turning on developer mode. After turning on, right-click the user profile and select "Copy ID".
 
-# Creating a JAR
+## Creating a JAR
 Run the following command in the project directory to create a JAR file. It will be outputted to `build/libs`.
 ```
 gradlew shadowjar
 ```
 
-# Usage
+## Usage
 There are 2 commands:
 * todo
 * shutdown
 
-## todo
+### todo
 Usage: `/todo <content>`
 
 Description: `Creates a to-do item.`
@@ -41,7 +41,7 @@ After using the slash command, the bot creates an embed with the given content a
 
 ![image](https://user-images.githubusercontent.com/66966617/184838390-0752b556-687d-4ab0-81ff-ecd0ca4d928e.png)
 
-## shutdown
+### shutdown
 Usage: `/shutdown`
 
 Description: `[RESTRICTED] Shuts the bot down.`
