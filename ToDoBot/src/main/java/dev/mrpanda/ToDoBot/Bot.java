@@ -103,7 +103,7 @@ public class Bot extends ListenerAdapter {
 		
 		// if the command is "shutdown", shut the bot down
 		} else if (name.equals("shutdown")) {
-			// if the command user is MrPandaDev#8749, notify shutdown status and execute
+			// if the command user is the bot owner, notify shutdown status and execute
 			if (event.getUser().getId().equals(OWNER_ID)) {
 				event.reply("Goodbye!").setEphemeral(true).complete();
 				System.out.println("Shutting down...");
