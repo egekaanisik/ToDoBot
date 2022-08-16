@@ -26,7 +26,8 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 
 public class Bot extends ListenerAdapter {
 	
-	public static String DISCORD_TOKEN = "<insert_your_discord_token>"; // Discord bot token
+	public static String DISCORD_TOKEN = "<insert_discord_bot_token>"; // Discord bot token
+	public static String OWNER_ID = "<insert_your_discord_id>"; // ID of the bot owner
 	
 	public static void main(String[] args) throws LoginException, InterruptedException, IOException {
 		// if there is no console, create a new one
@@ -103,13 +104,13 @@ public class Bot extends ListenerAdapter {
 		// if the command is "shutdown", shut the bot down
 		} else if (name.equals("shutdown")) {
 			// if the command user is MrPandaDev#8749, notify shutdown status and execute
-			if (event.getUser().getId().equals("257210596896931840")) {
+			if (event.getUser().getId().equals(OWNER_ID)) {
 				event.reply("Goodbye!").setEphemeral(true).complete();
 				System.out.println("Shutting down...");
 				event.getJDA().getShardManager().shutdown(); // close all connections and destroy all shards
 			// if not, notify user
 			} else {
-				event.reply("Only MrPandaDev#8749 can shut me down.").setEphemeral(true).queue();
+				event.reply("Only my owner can shut me down.").setEphemeral(true).queue();
 			}
 		}
 	}
