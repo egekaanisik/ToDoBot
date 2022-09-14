@@ -13,8 +13,6 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -49,25 +47,15 @@ public class Bot extends ListenerAdapter {
 		builder.build(); // build shard manager
 	}
 	
-	// when the bot is ready and set, notify
+	// when the bot is ready and set, notify and add commands to the bot
 	public void onReady(@Nonnull ReadyEvent event) {
+		// add commands
+		ArrayList<CommandData> commands = new ArrayList<CommandData>();
+		commands.add(Commands.slash("todo", "Creates a to-do item.").addOption(OptionType.STRING, "content", "Content of the task.", true)); // todo command
+		commands.add(Commands.slash("shutdown", "[RESTRICTED] Shuts the bot down.")); // shutdown command
+		event.getJDA().updateCommands().addCommands(commands).complete();
+		
 		System.out.println("Bot started!");
-	}
-	
-	// when a guild is ready, update its commands
-	public void onGuildReady(@Nonnull GuildReadyEvent event) {
-		ArrayList<CommandData> commands = new ArrayList<CommandData>();
-		commands.add(Commands.slash("todo", "Creates a to-do item.").addOption(OptionType.STRING, "content", "Content of the task.", true)); // todo command
-		commands.add(Commands.slash("shutdown", "[RESTRICTED] Shuts the bot down.")); // shutdown command
-		event.getGuild().updateCommands().addCommands(commands).queue();
-	}
-	
-	// when the bot joins a new guild, update its commands
-	public void onGuildJoin(@Nonnull GuildJoinEvent event) {
-		ArrayList<CommandData> commands = new ArrayList<CommandData>();
-		commands.add(Commands.slash("todo", "Creates a to-do item.").addOption(OptionType.STRING, "content", "Content of the task.", true)); // todo command
-		commands.add(Commands.slash("shutdown", "[RESTRICTED] Shuts the bot down.")); // shutdown command
-		event.getGuild().updateCommands().addCommands(commands).queue();
 	}
 
 	private Button CLEAR = Button.primary("clear", "Clear"); // clear button
