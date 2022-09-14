@@ -9,9 +9,9 @@ A simple Discord bot for creating to-do items. Supports slash commands and butto
 ## Installation
 To use this bot, a new Discord bot has to be created via [Discord Developer Portal](https://discord.com/developers/applications). The bot has to have the scopes `bot` and `applications.commands` while creating OAuth2 link.
 
-In Bot section of the developer portal, a token has to be generated to be set as the `DISCORD_TOKEN` in the [Bot.java](https://github.com/egekaanisik/ToDoBot/blob/master/ToDoBot/src/main/java/dev/mrpanda/ToDoBot/Bot.java).
+In Bot section of the developer portal, a token has to be generated to be set as the `token` in the `config.json` file which will be created after the first run.
 
-Another field that needs to be set is `OWNER_ID`. Enter the bot owner ID to this field to restrict the usage of owner-only commands.
+Another field that needs to be set is `owner_id`. Enter the bot owner ID to this field to restrict the usage of owner-only commands.
 
 > Note: The user ID can be obtained by turning on developer mode. After turning on, right-click the user profile and select "Copy ID".
 

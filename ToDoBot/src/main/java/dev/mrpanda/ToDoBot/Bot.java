@@ -1,13 +1,18 @@
 package dev.mrpanda.ToDoBot;
 
 import java.awt.Color;
-import java.awt.GraphicsEnvironment;
-import java.io.Console;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -24,27 +29,25 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 
 public class Bot extends ListenerAdapter {
 	
-	public static String DISCORD_TOKEN = "<insert_discord_bot_token>"; // Discord bot token
-	public static String OWNER_ID = "<insert_your_discord_id>"; // ID of the bot owner
+	public static HashMap<String, String> config;
 	
 	public static void main(String[] args) throws LoginException, InterruptedException, IOException {
-		// if there is no console, create a new one
-		Console console = System.console();
-		if (console == null && !GraphicsEnvironment.isHeadless()) {
-			String filename = Bot.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
-			Runtime.getRuntime().exec(new String[]{"cmd","/c","start","cmd","/c","java -jar \"" + filename + "\""});
-			System.exit(0); // comment this line while working on the project
+		try {
+			config = getConfig();
+	
+			System.out.println("Starting bot...");
+			
+			// shard manager configuration
+			DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(config.get("token"))
+			.addEventListeners(new Bot())
+			.setActivity(Activity.listening("/todo"))
+			.setAutoReconnect(true);
+			
+			builder.build(); // build shard manager
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
+			System.exit(1);
 		}
-
-		System.out.println("Starting bot...");
-		
-		// shard manager configuration
-		DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(DISCORD_TOKEN)
-		.addEventListeners(new Bot())
-		.setActivity(Activity.listening("/todo"))
-		.setAutoReconnect(true);
-		
-		builder.build(); // build shard manager
 	}
 	
 	// when the bot is ready and set, notify and add commands to the bot
@@ -92,7 +95,7 @@ public class Bot extends ListenerAdapter {
 		// if the command is "shutdown", shut the bot down
 		} else if (name.equals("shutdown")) {
 			// if the command user is MrPandaDev#8749, notify shutdown status and execute
-			if (event.getUser().getId().equals(OWNER_ID)) {
+			if (event.getUser().getId().equals(config.get("owner_id"))) {
 				event.reply("Goodbye!").setEphemeral(true).complete();
 				System.out.println("Shutting down...");
 				event.getJDA().getShardManager().shutdown(); // close all connections and destroy all shards
@@ -147,5 +150,61 @@ public class Bot extends ListenerAdapter {
 				.setFooter(prev.getFooter().getText())
 				.setTimestamp(prev.getTimestamp());
 		event.getHook().editOriginalEmbeds(eb.build()).queue(); // edit the embed
+	}
+	
+	/**
+	 * Get the configuration map.
+	 * @return config
+	 * @throws IOException
+	 */
+	public static HashMap<String, String> getConfig() throws IOException {
+		
+		File configFile = new File(Paths.get(Paths.get("").toAbsolutePath().toString(), "config.json").toString()); // config file
+
+		// create the config map
+		HashMap<String, String> config = new HashMap<>();
+		config.put("token", "");
+		config.put("owner_id", "");
+		
+		ObjectMapper mapper = new ObjectMapper(); // json mapper
+		
+		// if the file does not exists
+		if (!configFile.exists()) {
+			System.out.println("Cannot find config file.");
+			System.out.println("Creating a new one...");
+			
+			// create a new file and write empty json
+			configFile.createNewFile();
+			FileWriter fw = new FileWriter(configFile);
+			fw.write(mapper.writeValueAsString(config));
+			fw.close();
+			
+			System.out.println("Created!");
+			System.out.println("Please enter your credentials into it and run the script again.");
+			System.exit(1); // terminate
+		}
+		
+		// read json and map the keys
+		String json = Files.readString(Paths.get(configFile.getAbsolutePath()));
+		HashMap<String, String> map = mapper.readValue(json, new TypeReference<HashMap<String, String>>() {});
+		
+		// if the required keys does not exist
+		if (!map.keySet().contains("token") || !map.keySet().contains("owner_id")) {
+			System.out.println("Cannot find required fields in the config.");
+			
+			// reset the file
+			FileWriter fw = new FileWriter(configFile);
+			fw.write(mapper.writeValueAsString(config));
+			fw.close();
+
+			System.out.println("Please enter your credentials into it and run the script again.");
+			System.exit(1); // terminate
+		}
+		
+		// set the necessary keys to the config map
+		config.replace("token", map.get("token"));
+		config.replace("owner_id", map.get("owner_id"));
+		
+		return config; // return map
 	}
 }
